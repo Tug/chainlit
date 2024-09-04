@@ -618,3 +618,18 @@ class SQLAlchemyDataLayer(BaseDataLayer):
                     thread_dicts[thread_id]["elements"].append(element_dict)  # type: ignore
 
         return list(thread_dicts.values())
+
+    async def get_element(
+        self, thread_id: str, element_id: str
+    ) -> Optional[ElementDict]:
+        logger.debug(
+            f"DataLayer: get_element, thread_id='{thread_id}', element_id='{element_id}'"
+        )
+        s_query = "SELECT TOP 1 * FROM dbo.elements WHERE id = :id"
+        d_parameters = {"id": element_id}
+        ld_result = await self.execute_sql(query=s_query, parameters=d_parameters)
+        logger.debug(f"DataLayer: get_element, element result: {ld_result}")
+        if ld_result and isinstance(ld_result, list):
+            d_element_data = ld_result[0]
+            return ElementDict(**d_element_data)
+        return None

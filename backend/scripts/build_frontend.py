@@ -9,6 +9,10 @@ workspace_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 def build_frontend():
+    if os.path.exists(
+        os.path.join(workspace_dir, "backend", "chainlit", "frontend", "dist")
+    ):
+        return
     try:
         subprocess.run(
             ["pnpm", "install", "--frozen-lockfile"],
@@ -22,8 +26,9 @@ def build_frontend():
     except subprocess.CalledProcessError:
         print("Error: Failed to build frontend.")
         sys.exit(1)
-    except FileNotFoundError:
-        print("Frontend folder not found.")
+    except FileNotFoundError as fnfe:
+        print(fnfe)
+        print(f"pnpm or frontend folder not found in {workspace_dir}")
         sys.exit(1)
 
 
